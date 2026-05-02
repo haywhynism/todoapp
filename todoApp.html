@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+</head>
+
+<body onload="getTaskDetailsFromLocal()" style="background-color: rgb(26, 26, 29);">
+
+    <div class="pt-3 ps-3 mt-2">
+        <h1 class="mb-5" style="font-size: 30px; font-weight: bold; color: white">MY TODO LISTS</h1>
+        <div class="mb-3 d-flex gap-2">
+            <input class="p-2 bg-white border-1 rounded-3 col-8" type="text" id="inputText" placeholder="Enter your task" style="border-color: grey !important;">
+            <buttonn class="text-white p-2 rounded-3 col-3" onclick="taskNote()" id="addTask" style="background-color: rgb(60, 92, 156);">ADD TASK</button>
+        </div>
+    </div>
+        <div>
+            <p id="taskDetails">
+
+            </p>
+        </div>
+    
+
+
+    <script>
+
+        const task = [];
+
+        const taskNote = () => {
+            if (inputText.value.trim() === "") {
+                alert("Please enter a task");
+                getTaskDetailsFromLocal()
+                return;
+            }
+
+            const todoDate = new Date()
+            let taskObject = {
+                taskName: inputText.value,
+                taskDate: todoDate.toLocaleString()
+            }
+            task.push(taskObject)
+
+            console.log(task);
+
+            addTaskDetailsToLocal()
+            displayTask()
+            inputText.value = "";
+        }
+
+        const addTaskDetailsToLocal = () => {
+            let convertObj = JSON.stringify(task)
+            localStorage.setItem("TodoList", convertObj)
+            
+
+        }
+
+        const getTaskDetailsFromLocal=()=>{
+            let todoDetailsFromLocal = localStorage.getItem("TodoList")
+            
+            if (todoDetailsFromLocal == null){
+                console.log("nothing is inside the localStorage");
+            }else{
+                let parseTodo = JSON.parse(todoDetailsFromLocal)
+                console.log(parseTodo);
+                
+                task.length = 0;
+                task.push(...parseTodo);
+
+                console.log(task);
+                displayTask()
+            }
+        }
+
+        const editTask=(index)=>{
+            let newTaskName = prompt("Enter new task", task[index].taskName)
+            
+            if (newTaskName !== null && newTaskName.trim() !== "") {
+                task[index].taskName = newTaskName
+                task[index].taskDate = new Date().toLocaleString()
+                addTaskDetailsToLocal()
+                displayTask()
+            }
+        }
+
+        const deleteTask=(index)=>{
+            task.splice(index,1)
+            addTaskDetailsToLocal()
+            displayTask()
+            
+
+        }
+
+        const displayTask = () => {
+            taskDetails.innerHTML = ''
+
+            task.map((item, index) => {
+                taskDetails.innerHTML += ` <div class="d-flex gap-3 rounded-3 mx-3 mb-2 px-2 py-1 justify-content-between" id="btnTab" style="background-color:white;line-height:1; ">
+               <div class="flex">
+                  <div class="d-flex gap-2 align-items-center mb-2">
+                    <input class="form-check-input align-items-center" type="radio" name="" id="" style="width:18px;">
+                    <span class="fs-5">${task[index].taskName}</span>
+                  </div>
+                    <p class="text-end" style="font-size: 10px;">${task[index].taskDate}</p>
+                </div>
+                
+                <div class="d-flex flex-column gap-2 ">
+                    <button class="btn text-white p-1  rounded-3" style="background-color:lightgrey;" onclick="editTask(${index})">Edit</button>
+                    <button class="btn text-white rounded-3" style="background-color: red;" onclick="deleteTask(${index})">Delete</button>
+                </div>
+                
+            </div>`
+            })
+        }
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+    <script src="bootstrap/js/bootstrap.js"></script>
+</body>
+
+</html>
